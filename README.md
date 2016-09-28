@@ -1,2 +1,3 @@
-# sportamore_toolbox
-Toolbox for tools
+# Sportamore Toolbox
+A package for common utils shared by SCS and SWMS.
+
