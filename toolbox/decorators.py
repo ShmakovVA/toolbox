@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import json
+import logging
 import time
 from functools import wraps
+
+log = logging.getLogger(__name__)
 
 
 def time_call(logger, call_type, context_func=None):
@@ -54,7 +57,7 @@ def time_call(logger, call_type, context_func=None):
                     })
                     logger.info(json.dumps(context))
                 except:
-                    pass
+                    log.exception('time_call() failed to log')
             return result
         return call
     return decorate
