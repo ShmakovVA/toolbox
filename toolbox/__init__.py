@@ -7,6 +7,7 @@ from toolbox.utils import (
     set_chunker,
     suppress_logging,
 )
+from unpack_5mp import unpack
 
 __all__ = [
     'time_call',
@@ -15,5 +16,6 @@ __all__ = [
     'queryset_chunker',
     'set_chunker',
     'suppress_logging',
+    'unpack',
 ]
 
