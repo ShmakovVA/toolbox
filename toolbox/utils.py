@@ -58,33 +58,6 @@ def queryset_chunker(qs, chunk_size=100):
         chunk = qs[idx:idx+chunk_size]
 
 
-class suppress_logging(object):
-    """
-    A contextmanager/decorator that will prevent any logging messages
-    triggered during the body from being processed.
-
-    :param target_level: Anything at or below this level will be suppressed.
-    """
-
-    def __init__(self, target_level=logging.CRITICAL):
-        self.target_level = target_level
-
-    def __call__(self, func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            with self:
-                return func(*args, **kwargs)
-
-        return wrapper
-
-    def __enter__(self):
-        self.previous_level = logging.root.manager.disable
-        logging.disable(self.target_level)
-
-    def __exit__(self, *exc):
-        logging.disable(self.previous_level)
-
-
 def datetime_to_epoch(date_time):
     # type: (datetime) -> int
     u""" Convert a datetime object to an epoch timestamp. """
