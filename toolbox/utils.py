@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
-import time
-from functools import wraps
+import pytz
+from datetime import datetime
+from time import mktime
 
 log = logging.getLogger(__name__)
+
+EPOCH = datetime(1970, 1, 1, tzinfo=pytz.utc)
 
 
 def set_chunker(iterable, chunk_size=100):
@@ -59,7 +62,13 @@ def queryset_chunker(qs, chunk_size=100):
 
 
 def datetime_to_epoch(date_time):
-    # type: (datetime) -> int
-    u""" Convert a datetime object to an epoch timestamp. """
-    return int(time.mktime(date_time.timetuple()))
+    # type: (datetime.datetime) -> int
+    u""" Convert a datetime object to epoch seconds. """
+
+    if date_time.tzinfo:
+        # incompatible with naive datetimes
+        return int((date_time - EPOCH).total_seconds())
+
+    else:
+        return int(mktime(date_time.timetuple()))
 
