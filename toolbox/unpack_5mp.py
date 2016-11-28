@@ -7,6 +7,7 @@ MIMETYPES = {
     'application/pdf': '.pdf',
     'application/postscript': '.ps',
     'application/unifaun': '.xml',
+    'text/zpl': '.zpl',
 }
 
 
