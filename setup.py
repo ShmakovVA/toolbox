@@ -11,6 +11,7 @@ setup(
     install_requires=[
         'django >= 1.6.8',
         'pytz >= 2015.6',
+        'furl >= 0.5.6',
     ],
 )
 
