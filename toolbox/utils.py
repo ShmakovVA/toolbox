@@ -1,30 +1,25 @@
 # -*- coding: utf-8 -*-
 import logging
-import pytz
 from datetime import datetime
 from time import mktime
+
+import pytz
 
 log = logging.getLogger(__name__)
 
 EPOCH = datetime(1970, 1, 1, tzinfo=pytz.utc)
 
 
-def set_chunker(iterable, chunk_size=100):
-    """
-    Generator function that yields `chunk_size`-sized sets from an iterable.
+def datetime_to_epoch(date_time):
+    # type: (datetime.datetime) -> int
+    u""" Convert a datetime object to epoch seconds. """
 
-    :param iterable: an iterable to cut up
-    :param chunk_size: chunk size, default 100
-    """
-    s = set()
-    for i, id in enumerate(iterable, start=1):
-        s.add(id)
-        if not i % chunk_size:
-            chunk = s
-            s = set()
-            yield chunk
-    if s:
-        yield s
+    if date_time.tzinfo:
+        # incompatible with naive datetimes
+        return int((date_time - EPOCH).total_seconds())
+
+    else:
+        return int(mktime(date_time.timetuple()))
 
 
 def list_chunker(iterable, chunk_size=100):
@@ -61,14 +56,20 @@ def queryset_chunker(qs, chunk_size=100):
         chunk = qs[idx:idx+chunk_size]
 
 
-def datetime_to_epoch(date_time):
-    # type: (datetime.datetime) -> int
-    u""" Convert a datetime object to epoch seconds. """
+def set_chunker(iterable, chunk_size=100):
+    """
+    Generator function that yields `chunk_size`-sized sets from an iterable.
 
-    if date_time.tzinfo:
-        # incompatible with naive datetimes
-        return int((date_time - EPOCH).total_seconds())
-
-    else:
-        return int(mktime(date_time.timetuple()))
+    :param iterable: an iterable to cut up
+    :param chunk_size: chunk size, default 100
+    """
+    s = set()
+    for i, id in enumerate(iterable, start=1):
+        s.add(id)
+        if not i % chunk_size:
+            chunk = s
+            s = set()
+            yield chunk
+    if s:
+        yield s
 
