@@ -4,10 +4,29 @@ from datetime import datetime
 from time import mktime
 
 import pytz
+from furl import furl, omdict1D
 
 log = logging.getLogger(__name__)
 
 EPOCH = datetime(1970, 1, 1, tzinfo=pytz.utc)
+
+
+def compare_urls(url, other_url):
+    """
+    Compare two URLs. This function doesn't care about the order of querystring
+    parameters.
+
+    :param url: url string or furl object
+    :param other_url: url string or furl object
+    :return: bool of whether we consider them the same
+    """
+    def sort_qs_params(url):
+        url.args = omdict1D(sorted(url.args.allitems()))
+    u1 = furl(url)
+    sort_qs_params(u1)
+    u2 = furl(other_url)
+    sort_qs_params(u2)
+    return u1 == u2
 
 
 def datetime_to_epoch(date_time):
