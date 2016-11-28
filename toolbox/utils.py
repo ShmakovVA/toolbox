@@ -1,30 +1,44 @@
 # -*- coding: utf-8 -*-
 import logging
-import pytz
 from datetime import datetime
 from time import mktime
+
+import pytz
+from furl import furl, omdict1D
 
 log = logging.getLogger(__name__)
 
 EPOCH = datetime(1970, 1, 1, tzinfo=pytz.utc)
 
 
-def set_chunker(iterable, chunk_size=100):
+def compare_urls(url, other_url):
     """
-    Generator function that yields `chunk_size`-sized sets from an iterable.
+    Compare two URLs. This function doesn't care about the order of querystring
+    parameters.
 
-    :param iterable: an iterable to cut up
-    :param chunk_size: chunk size, default 100
+    :param url: url string or furl object
+    :param other_url: url string or furl object
+    :return: bool of whether we consider them the same
     """
-    s = set()
-    for i, id in enumerate(iterable, start=1):
-        s.add(id)
-        if not i % chunk_size:
-            chunk = s
-            s = set()
-            yield chunk
-    if s:
-        yield s
+    def sort_qs_params(url):
+        url.args = omdict1D(sorted(url.args.allitems()))
+    u1 = furl(url)
+    sort_qs_params(u1)
+    u2 = furl(other_url)
+    sort_qs_params(u2)
+    return u1 == u2
+
+
+def datetime_to_epoch(date_time):
+    # type: (datetime.datetime) -> int
+    u""" Convert a datetime object to epoch seconds. """
+
+    if date_time.tzinfo:
+        # incompatible with naive datetimes
+        return int((date_time - EPOCH).total_seconds())
+
+    else:
+        return int(mktime(date_time.timetuple()))
 
 
 def list_chunker(iterable, chunk_size=100):
@@ -61,14 +75,20 @@ def queryset_chunker(qs, chunk_size=100):
         chunk = qs[idx:idx+chunk_size]
 
 
-def datetime_to_epoch(date_time):
-    # type: (datetime.datetime) -> int
-    u""" Convert a datetime object to epoch seconds. """
+def set_chunker(iterable, chunk_size=100):
+    """
+    Generator function that yields `chunk_size`-sized sets from an iterable.
 
-    if date_time.tzinfo:
-        # incompatible with naive datetimes
-        return int((date_time - EPOCH).total_seconds())
-
-    else:
-        return int(mktime(date_time.timetuple()))
+    :param iterable: an iterable to cut up
+    :param chunk_size: chunk size, default 100
+    """
+    s = set()
+    for i, id in enumerate(iterable, start=1):
+        s.add(id)
+        if not i % chunk_size:
+            chunk = s
+            s = set()
+            yield chunk
+    if s:
+        yield s
 
