@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from time import mktime
 
 import pytz
@@ -27,6 +27,26 @@ def compare_urls(url, other_url):
     u2 = furl(other_url)
     sort_qs_params(u2)
     return u1 == u2
+
+
+def date_range(start_date, stop_date=None):
+    """
+    Yields date objects between `start_date` and `stop_date` (inclusive).
+    `stop_date` can also be an integer offset of days or a timedelta.
+
+    :param start_date: first date
+    :param stop_date: last date (default: today) or offset (int or timedelta)
+    """
+    if isinstance(stop_date, int):
+        stop_date = start_date + timedelta(days=stop_date)
+    elif isinstance(stop_date, timedelta):
+        stop_date = start_date + stop_date
+    else:
+        stop_date = stop_date or date.today()
+    current = start_date
+    while current <= stop_date:
+        yield current
+        current += timedelta(days=1)
 
 
 def datetime_to_epoch(date_time):
