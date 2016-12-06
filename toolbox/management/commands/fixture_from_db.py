@@ -15,7 +15,6 @@ def attribute_to_str(obj, field):
 
 
 def print_object_as_code_fixture(obj):
-    # FIXME support common types such as str, unicode, datetime
     print u'%(model)s.objects.create(%(attributes)s)\n' % ({
         'model' : obj.__class__.__name__,
         'attributes' : u',\n'.join(
