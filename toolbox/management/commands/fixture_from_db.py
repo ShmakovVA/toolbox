@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.db.models import Model
 from django.db.models.loading import get_model
 from datetime import datetime
 
@@ -9,6 +10,8 @@ def attribute_to_str(obj, field):
         value = u'None'
     elif isinstance(value, datetime):
         value = u'datetime.datetime(\'%s\')' % value.isoformat()
+    elif isinstance(value, Model):
+        value = value.id
     elif isinstance(value, (object, basestring)):
         value = u'\'%s\'' % value
     return u'%s = %s' % (field.name, value)
