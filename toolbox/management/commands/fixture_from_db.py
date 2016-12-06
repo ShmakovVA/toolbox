@@ -12,9 +12,15 @@ def attribute_to_str(obj, field):
         value = u'datetime.datetime(\'%s\')' % value.isoformat()
     elif isinstance(value, Model):
         value = value.id
-    elif isinstance(value, (object, basestring)):
-        value = u'\'%s\'' % value
-    return u'%s = %s' % (field.name, value)
+    elif isinstance(value, basestring):
+        if '\n' in value:
+            value = u'u\"\"\"%s\"\"\"' % value.replace('\'', '\\\'')\
+                .replace('\"', '\\\"')
+        else:
+            value = u'u\'%s\'' % value.replace('\'', '\\\'') \
+                .replace('\"', '\\\"')
+
+    return u'%s=%s' % (field.name, value)
 
 
 def print_object_as_code_fixture(obj):
