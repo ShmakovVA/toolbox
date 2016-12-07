@@ -9,7 +9,7 @@ def attribute_to_str(obj, field):
     if value is None:
         value = u'None'
     elif isinstance(value, datetime):
-        value = u'datetime.datetime(\'%s\')' % value.isoformat()
+        value = repr(value)
     elif isinstance(value, Model):
         value = value.id
     elif isinstance(value, basestring):
