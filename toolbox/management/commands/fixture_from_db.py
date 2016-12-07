@@ -11,7 +11,7 @@ def attribute_to_str(obj, field):
     elif isinstance(value, datetime):
         value = repr(value)
     elif isinstance(value, Model):
-        value = value.id
+        return u'%s_id=%s' % (field.name, value.id)
     elif isinstance(value, basestring):
         if '\n' in value:
             value = u'u\"\"\"%s\"\"\"' % value.replace('\'', '\\\'')\
