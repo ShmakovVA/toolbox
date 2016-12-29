@@ -11,7 +11,7 @@ from toolbox.exceptions import LockFailure
 log = logging.getLogger(__name__)
 
 
-class LockSemaphore(object):
+class Lock(object):
     """
     Context manager / decorator that tries to aquire a lock before proceding,
     raises LockFailure if another process is already holding that lock.
@@ -21,12 +21,12 @@ class LockSemaphore(object):
     :param prefix: optional prefix (default 'sem_')
     :param locker_name: name of cache (default 'locker')
     """
-    fail = LockFailure
+    LockFailure = LockFailure
 
     def __init__(self, key, timeout=None, prefix='sem_', locker_name='locker'):
         self.key = prefix + key
         self.timeout = timeout
-        self.locker = caches['locker']
+        self.locker = caches[locker_name]
 
     def __call__(self, func):
         @wraps(func)
@@ -37,14 +37,15 @@ class LockSemaphore(object):
 
     def __enter__(self):
         if not self.locker.add(self.key, True, self.timeout):
-            raise self.fail('Failed to aquire lock "{}"'.format(self.key))
+            raise self.LockFailure(
+                'Failed to aquire lock "{}"'.format(self.key))
 
     def __exit__(self, *exc):
         self.locker.delete(self.key)
-lock = LockSemaphore
+lock = Lock
 
 
-class suppress_logging(object):
+class SuppressLogging(object):
     """
     A contextmanager/decorator that will prevent any logging messages
     triggered during the body from being processed.
@@ -69,6 +70,7 @@ class suppress_logging(object):
 
     def __exit__(self, *exc):
         logging.disable(self.previous_level)
+suppress_logging = SuppressLogging
 
 
 def time_call(logger, call_type, context_func=None):
