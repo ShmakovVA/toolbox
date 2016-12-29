@@ -21,6 +21,8 @@ class LockSemaphore(object):
     :param prefix: optional prefix (default 'sem_')
     :param locker_name: name of cache (default 'locker')
     """
+    fail = LockFailure
+
     def __init__(self, key, timeout=None, prefix='sem_', locker_name='locker'):
         self.key = prefix + key
         self.timeout = timeout
@@ -35,7 +37,7 @@ class LockSemaphore(object):
 
     def __enter__(self):
         if not self.locker.add(self.key, True, self.timeout):
-            raise LockFailure('Failed to aquire lock "{}"'.format(self.key))
+            raise self.fail('Failed to aquire lock "{}"'.format(self.key))
 
     def __exit__(self, *exc):
         self.locker.delete(self.key)
