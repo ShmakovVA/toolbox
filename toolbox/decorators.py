@@ -4,7 +4,42 @@ import logging
 import time
 from functools import wraps
 
+from django.core.cache import caches
+
+from toolbox.exceptions import LockFailure
+
 log = logging.getLogger(__name__)
+
+
+class LockSemaphore(object):
+    """
+    Context manager / decorator that tries to aquire a lock before proceding,
+    raises LockFailure if another process is already holding that lock.
+
+    :param key: locker key (prefixed with `prefix`)
+    :param timeout: timeout in seconds (default None)
+    :param prefix: optional prefix (default 'sem_')
+    :param locker_name: name of cache (default 'locker')
+    """
+    def __init__(self, key, timeout=None, prefix='sem_', locker_name='locker'):
+        self.key = prefix + key
+        self.timeout = timeout
+        self.locker = caches['locker']
+
+    def __call__(self, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            with self:
+                return func(*args, **kwargs)
+        return wrapper
+
+    def __enter__(self):
+        if not self.locker.add(self.key, True, self.timeout):
+            raise LockFailure('Failed to aquire lock "{}"'.format(self.key))
+
+    def __exit__(self, *exc):
+        self.locker.delete(self.key)
+lock = LockSemaphore
 
 
 class suppress_logging(object):
