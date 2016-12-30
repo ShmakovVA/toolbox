@@ -4,10 +4,48 @@ import logging
 import time
 from functools import wraps
 
+from django.core.cache import caches
+
+from toolbox.exceptions import LockFailure
+
 log = logging.getLogger(__name__)
 
 
-class suppress_logging(object):
+class Lock(object):
+    """
+    Context manager / decorator that tries to aquire a lock before proceding,
+    raises LockFailure if another process is already holding that lock.
+
+    :param key: locker key (prefixed with `prefix`)
+    :param timeout: timeout in seconds (default None)
+    :param prefix: optional prefix (default 'sem_')
+    :param locker_name: name of cache (default 'locker')
+    """
+    LockFailure = LockFailure
+
+    def __init__(self, key, timeout=None, prefix='sem_', locker_name='locker'):
+        self.key = prefix + key
+        self.timeout = timeout
+        self.locker = caches[locker_name]
+
+    def __call__(self, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            with self:
+                return func(*args, **kwargs)
+        return wrapper
+
+    def __enter__(self):
+        if not self.locker.add(self.key, True, self.timeout):
+            raise self.LockFailure(
+                'Failed to aquire lock "{}"'.format(self.key))
+
+    def __exit__(self, *exc):
+        self.locker.delete(self.key)
+lock = Lock
+
+
+class SuppressLogging(object):
     """
     A contextmanager/decorator that will prevent any logging messages
     triggered during the body from being processed.
@@ -32,6 +70,7 @@ class suppress_logging(object):
 
     def __exit__(self, *exc):
         logging.disable(self.previous_level)
+suppress_logging = SuppressLogging
 
 
 def time_call(logger, call_type, context_func=None):
