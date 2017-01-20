@@ -100,7 +100,7 @@ def s_to_hms(seconds, d=60*60, r=[]):
     """
     Split seconds into more human-readable hours, minutes and seconds.
 
-    :param seconds: integer seconds
+    :param seconds: positive integer seconds
     :return: namedtuple of ['hours', 'minutes', 'seconds']
     """
     if seconds == 0:
