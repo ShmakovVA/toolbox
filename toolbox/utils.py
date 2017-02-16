@@ -104,6 +104,7 @@ def s_to_hms(seconds, d=60*60, r=[]):
     :return: namedtuple of ['hours', 'minutes', 'seconds']
     """
     if seconds == 0:
+        r = (r + [0, 0, 0])[:3]  # right pad 0:s
         return namedtuple('hms', ['hours', 'minutes', 'seconds'])(*r)
     return s_to_hms(seconds % d, d // 60, r + [seconds // d])
 
