@@ -90,7 +90,7 @@ def queryset_chunker(qs, chunk_size=100):
     :param chunk_size: chunk size, default 100
     """
     if hasattr(qs, 'ordered'):
-        assert(getattr(qs, 'ordered'), 'Querysets must be ordered')
+        assert getattr(qs, 'ordered'), 'Querysets must be ordered'
 
     idx = 0
     chunk = qs[idx:idx+chunk_size]
