@@ -2,6 +2,7 @@
 import logging
 from datetime import datetime, date, timedelta
 from time import mktime
+from collections import namedtuple
 
 import pytz
 from furl import furl, omdict1D
@@ -93,6 +94,19 @@ def queryset_chunker(qs, chunk_size=100):
         yield chunk
         idx += chunk_size
         chunk = qs[idx:idx+chunk_size]
+
+
+def s_to_hms(seconds, d=60*60, r=[]):
+    """
+    Split seconds into more human-readable hours, minutes and seconds.
+
+    :param seconds: positive integer seconds
+    :return: namedtuple of ['hours', 'minutes', 'seconds']
+    """
+    if seconds == 0:
+        r = (r + [0, 0, 0])[:3]  # right pad 0:s
+        return namedtuple('hms', ['hours', 'minutes', 'seconds'])(*r)
+    return s_to_hms(seconds % d, d // 60, r + [seconds // d])
 
 
 def set_chunker(iterable, chunk_size=100):
