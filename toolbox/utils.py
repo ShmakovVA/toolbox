@@ -84,10 +84,14 @@ def queryset_chunker(qs, chunk_size=100):
     """
     Generator function that yields `chunk_size`-sized slices of QuerySet-like
     objects. For example QuerySet:s and SportamoreSearchQuerySet:s.
+    Django QuerySets need to be ordered.
 
     :param qs: QuerySet-like to slice
     :param chunk_size: chunk size, default 100
     """
+    if hasattr(qs, 'ordered'):
+        assert(getattr(qs, 'ordered'), 'Querysets must be ordered')
+
     idx = 0
     chunk = qs[idx:idx+chunk_size]
     while chunk:
