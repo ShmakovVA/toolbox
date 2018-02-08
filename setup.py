@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     description='Sportamore Toolbox',
     url='https://github.com/Sportamore/sportamore_toolbox',
-    version='0.1',
+    version='1.1.0',
     author='Oscar Linderoth',
     install_requires=[
         'django >= 1.6.8',
