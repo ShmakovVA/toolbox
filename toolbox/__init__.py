@@ -21,4 +21,3 @@ __all__ = [
     'suppress_logging',
     'unpack',
 ]
-
