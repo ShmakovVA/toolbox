@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from .utils import (
     compare_urls,
-    sort_qs_params,
     date_range,
     datetime_to_epoch,
     list_chunker,
@@ -13,7 +12,6 @@ from .utils import (
 
 __all__ = [
     'compare_urls',
-    'sort_qs_params',
     'date_range',
     'datetime_to_epoch',
     'list_chunker',
