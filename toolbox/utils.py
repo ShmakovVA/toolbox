@@ -70,15 +70,15 @@ def list_chunker(iterable, chunk_size=100):
     :param iterable: an iterable to cut up
     :param chunk_size: chunk size, default 100
     """
-    l = []
+    li = []
     for i, id in enumerate(iterable, start=1):
-        l.append(id)
+        li.append(id)
         if not i % chunk_size:
-            chunk = l
-            l = []
+            chunk = li
+            li = []
             yield chunk
-    if l:
-        yield l
+    if li:
+        yield i
 
 
 def queryset_chunker(qs, chunk_size=100):
@@ -94,14 +94,14 @@ def queryset_chunker(qs, chunk_size=100):
         assert getattr(qs, 'ordered'), 'Querysets must be ordered'
 
     idx = 0
-    chunk = qs[idx:idx+chunk_size]
+    chunk = qs[idx:idx + chunk_size]
     while chunk:
         yield chunk
         idx += chunk_size
-        chunk = qs[idx:idx+chunk_size]
+        chunk = qs[idx:idx + chunk_size]
 
 
-def s_to_hms(seconds, d=60*60, r=[]):
+def s_to_hms(seconds, d=60 * 60, r=[]):
     """
     Split seconds into more human-readable hours, minutes and seconds.
 
@@ -144,3 +144,4 @@ def process_with_threadpool(obj_list, func, max_workers=2):
     # We can use a with statement to ensure threads are cleaned up promptly
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         result = {executor.submit(func, o): o for o in obj_list}
+        return result

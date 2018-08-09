@@ -32,6 +32,8 @@ class SuppressLogging(object):
 
     def __exit__(self, *exc):
         logging.disable(self.previous_level)
+
+
 suppress_logging = SuppressLogging
 
 
@@ -40,8 +42,8 @@ def time_call(logger, call_type, context_func=None):
     Log duration of decorated function in JSON format.
 
     `context_func`, if passed, will be called with the decorated function's
-    *args and **kwargs and is expected to return a dict that will be included in
-    the log entry.
+    *args and **kwargs and is expected to return a dict that will be included
+    in the log entry.
 
     e.g.:
 
@@ -73,7 +75,7 @@ def time_call(logger, call_type, context_func=None):
                 context.update(context_func(*args, **kwargs))
             try:
                 result = func(*args, **kwargs)
-            except:
+            except Exception:
                 raise
             finally:
                 end_time = time.time()
@@ -84,9 +86,8 @@ def time_call(logger, call_type, context_func=None):
                         'duration': duration,
                     })
                     logger.info(json.dumps(context))
-                except:
+                except Exception:
                     log.exception('time_call() failed to log')
             return result
         return call
     return decorate
-
