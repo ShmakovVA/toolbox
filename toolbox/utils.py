@@ -78,7 +78,7 @@ def list_chunker(iterable, chunk_size=100):
             li = []
             yield chunk
     if li:
-        yield i
+        yield li
 
 
 def queryset_chunker(qs, chunk_size=100):
