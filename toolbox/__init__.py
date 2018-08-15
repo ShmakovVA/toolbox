@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from . import _vcs
 from .utils import (
     compare_urls,
     date_range,
@@ -20,3 +21,5 @@ __all__ = [
     'set_chunker',
     'process_with_threadpool'
 ]
+
+__version__ = _vcs.__version__.split('.')
