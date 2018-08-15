@@ -11,6 +11,9 @@ setup(
         'pytz >= 2015.6',
         'furl >= 0.5.6',
     ],
+    extras_require={
+        ':python_version == "2.7"': ['futures']
+    },
     setup_requires=[
         'vcversioner'
     ],
