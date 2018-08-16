@@ -22,4 +22,4 @@ __all__ = [
     'process_with_threadpool'
 ]
 
-__version__ = tuple(map(int, _vcs.__version__.split('.')))
+__version__ = tuple(map(int, _vcs.__version__.split('.')[:3]))
