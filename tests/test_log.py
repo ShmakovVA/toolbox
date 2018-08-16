@@ -1,15 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
-import unittest
-try:
-    from mock import MagicMock
-except ImportError:
-    from unittest.mock import MagicMock
-
 from toolbox.log import RequireExceptionFilter
 
+from . import TestCase, MagicMock
 
-class TestRequireExceptionFilter(unittest.TestCase):
+class TestRequireExceptionFilter(TestCase):
     def setUp(self):
         self.logger = logging.Logger('test_log')
         self.logger.setLevel(logging.DEBUG)

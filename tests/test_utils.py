@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import unittest
 import pytz
 from datetime import datetime, date
 
@@ -14,8 +13,10 @@ from toolbox.utils import (
     set_chunker
 )
 
+from . import TestCase
 
-class TestTimeUtils(unittest.TestCase):
+
+class TestTimeUtils(TestCase):
     def test_date_range(self):
         start_date = date(2018, 1, 1)
 
@@ -52,7 +53,7 @@ class TestTimeUtils(unittest.TestCase):
         self.assertEqual(tuple(s_to_hms(3661)), (1, 1, 1))
 
 
-class TestUtils(unittest.TestCase):
+class TestUtils(TestCase):
     def test_compare_urls(self):
         self.assertTrue(compare_urls(
             'http://some.host/some/path',
@@ -80,7 +81,7 @@ class TestUtils(unittest.TestCase):
         self.assertListEqual(result_list, [1, 4, 9, 16])
 
 
-class TestChunkers(unittest.TestCase):
+class TestChunkers(TestCase):
     def test_list_chunker(self):
         sample_list = range(10)
         self.assertListEqual(

@@ -1,18 +1,14 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
-import unittest
 from time import sleep
-
-try:
-    from mock import MagicMock
-except ImportError:
-    from unittest.mock import MagicMock
 
 from toolbox.decorators import suppress_logging, time_call
 
+from . import TestCase, MagicMock
 
-class TestSuppressLogging(unittest.TestCase):
+
+class TestSuppressLogging(TestCase):
     def test_suppress_logging(self):
         base_disable = logging.root.manager.disable
         self.assertEqual(base_disable, logging.NOTSET)
@@ -29,7 +25,7 @@ class TestSuppressLogging(unittest.TestCase):
         self.assertEqual(logging.root.manager.disable, logging.NOTSET)
 
 
-class TestTimeCall(unittest.TestCase):
+class TestTimeCall(TestCase):
     def test_timed_call(self):
         mock_logger = MagicMock()
 
