@@ -159,7 +159,9 @@ class UserWithPermissionManagerAdmin(MonkeyModelAdmin):
             'apps': app_names
         }
 
-        return render(request, TEMPLATE, context)
+        return render(request=request,
+                      template_name='admin/toolbox/%s' % TEMPLATE,
+                      context=context)
 
     def remove_permission(self, request):
         user_id = request.POST.get('user_id', None)
