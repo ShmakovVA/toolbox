@@ -7,7 +7,7 @@ setup(
     description='Sportamore Toolbox',
     url='https://github.com/ShmakovVA/toolbox',
     author='No',
-    version=2.1.1,
+    version='2.1.1',
     install_requires=[
         'pytz >= 2015.6',
         'furl >= 0.5.6',
