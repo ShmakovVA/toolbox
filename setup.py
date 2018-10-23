@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='toolbox',
-    packages='toolbox',
+    packages=['toolbox'],
     description='Sportamore Toolbox',
     url='https://github.com/ShmakovVA/toolbox',
     author='No',
