@@ -1,0 +1,292 @@
+{% extends "admin/base_site.html" %}
+{% load static i18n %}
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css"
+          href="{% static "admin/css/forms.css" %}"/>
+{% endblock %}
+{% block extrastyle %}
+    {{ block.super }}
+
+{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+        <a href="{% url 'admin:index' %}">Home</a> &rsaquo;
+        <a href="../../">Core</a> &rsaquo;
+        <a href="{% url 'admin:core_wmsuser_changelist' %}">WMSUsers</a>
+        &rsaquo;
+        Permission handler
+    </ul>
+{% endblock %}
+
+{% block content %}
+
+    <div id="content-main">
+        <div class="module">
+            <h2>Filters</h2>
+            <form id="filterform">
+                <select name="user" id="user_filter">
+                    <option selected value="">--- USER ---</option>
+
+                    {% for user in users %}
+                        <option value="{{ user.pk }}"
+                                {% if user == selected_user %}selected{% endif %}>{{ user }}</option>
+                    {% endfor %}
+                </select>
+                or
+                <select name="group" id="group_filter">
+                    <option selected value="">--- GROUP ---</option>
+                    {% for group in groups %}
+                        <option value="{{ group.pk }}"
+                                {% if group == selected_group %}selected{% endif %}>{{ group }}</option>
+                    {% endfor %}
+                </select>
+                or
+                <input style="margin-top: -10px; text-align: center"
+                       name="perm_search" id="perm_search"
+                       placeholder="Permission"
+                       value="{% if perm_id %}{{ perm_id }}{% elif perm_search %}{{ perm_search }}{% endif %}">
+                <input style="margin-top: -10px;" type="submit" value="Go">
+            </form>
+            <p id="note">
+                The "Customers" group has been excluded.
+            </p>
+        </div>
+
+        {% if selected_user %}
+            <table class="module table table-bordered">
+                <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Full name</th>
+                    <th>Wmsuser</th>
+                    <th>Employee number</th>
+                    <th>Groups</th>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="{% url 'admin:auth_user_change' selected_user.id %}"
+                           target="_blank">{{ selected_user.username }}</a>
+                    </td>
+                    <td>{{ selected_user.get_full_name }}</td>
+                    <td>
+                        <a href="{% url 'admin:core_wmsuser_change' selected_user.wmsuser.id %}">wmsuser</a>
+                    </td>
+                    <td>
+                        {{ selected_user.wmsuser.employee_no }}
+                    </td>
+                    <td>
+                        {% for group in selected_user_groups %}
+                            <a href="{% url 'admin:permission_handler' %}?group={{ group.pk }}">{{ group }}</a>
+                            <br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                </thead>
+            </table>
+
+            <div class="module">
+
+                <h2>Permissions (applied to user)</h2>
+                {% if user_perms %}
+                    <p>Permissions with the <img
+                            src="/static/admin/img/icon-no.gif"> icon next to
+                        them, are already applied via groups, and can safely be
+                        removed. (click the icon)</p>
+                    <ul>
+                        {% for perm in user_perms %}
+                            {% if perm.1 %}
+                                <li id="{{ perm.0.pk }}">
+                                    <a href="{% url 'admin:permission_handler' %}?permission={{ perm.0.pk }}">{{ perm.0 }}</a>
+                                    {% if perm.1 %}<a href="#"
+                                                      onclick="remove_perm('{{ selected_user.pk }}','{{ perm.0.pk }}', 'perm');"><img
+                                            src="/static/admin/img/icon-no.gif"></a>{% endif %}
+                                </li>
+                            {% else %}
+                                <li id="{{ perm.0.pk }}"><a
+                                        href="{% url 'admin:permission_handler' %}?permission={{ perm.0.pk }}">{{ perm.0 }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No permissions applied directly to user.</p>
+                {% endif %}
+
+                <h2>Permissions (via groups)</h2>
+                <table class="module table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>User Group</th>
+                        <th>Permissions</th>
+                    </tr>
+                    </thead>
+                    {% for user_group, perms in user_group_perms.items %}
+                        <tr>
+                            <td>{{ user_group }}</td>
+                            <td>
+                                {% for perm in perms %}
+                                    <li>
+                                        <a href="{% url 'admin:permission_handler' %}?permission={{ perm.pk }}">{{ perm }}</a>
+                                    </li>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+            </div>
+        {% elif selected_group %}
+            <h3>
+                <a href="{% url 'admin:auth_group_change' selected_group.id %}">{{ selected_group }}</a>
+            </h3>
+            <table class="module table table-bordered">
+                <thead>
+                <tr>
+                    <th>Users</th>
+                    <th>Permissions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        {% for user in group_users %}
+                            <a href="{% url 'admin:permission_handler' %}?user={{ user.pk }}">{{ user }}</a>
+                            <br>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <ul>
+                            {% for perm in group_perms %}
+                                <li>
+                                    <a href="{% url 'admin:permission_handler' %}?permission={{ perm.pk }}">{{ perm }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        {% elif selected_perm %}
+            <h3>
+                {{ selected_perm }}
+            </h3>
+            <p>Users with the <img src="/static/admin/img/icon-no.gif"> icon
+                next to them, have the permission already applied via groups,
+                and can safely be removed. (click the icon)</p>
+
+            <table class="module table table-bordered">
+                <thead>
+                <tr>
+                    <th>Users with perm applied directly</th>
+                    <th>Users with perm applied via groups</th>
+                    <th>Groups</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        {% if not perm_users %}
+                            <span> No users applied directly </span>
+                        {% endif %}
+                        {% for user in perm_users %}
+                            {% if user.1 %}
+                                <span id="{{ user.0.pk }}"><a
+                                        href="{% url 'admin:permission_handler' %}?user={{ user.0.pk }}">{{ user.0 }}</a>
+                                    {% if user.1 %}<a href="#"
+                                                      onclick="remove_perm('{{ user.0.pk }}','{{ selected_perm.pk }}', 'user');"><img
+                                            src="/static/admin/img/icon-no.gif"></a>
+                                        </span>{% endif %}
+                            {% else %}
+                                <a href="{% url 'admin:permission_handler' %}?user={{ user.0.pk }}"
+                                   id="{{ user.0.pk }}">{{ user.0 }}</a>
+                            {% endif %}
+                            <br>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for user in selected_perm_group_users %}
+                            <a href="{% url 'admin:permission_handler' %}?user={{ user.pk }}"
+                               id="{{ user.pk }}">{{ user }}</a><br>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <ul>
+                            {% for group in selected_perm_groups %}
+                                <a href="{% url 'admin:permission_handler' %}?group={{ group.pk }}">{{ group }}</a>
+                                <br>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        {% elif perm_search %}
+            <h3>
+                Searched permissions for: {{ perm_search }}
+            </h3>
+            {% if searched_perms %}
+                {% for perm in searched_perms %}
+                    <li>
+                        <a href="{% url 'admin:permission_handler' %}?permission={{ perm.pk }}">{{ perm }}</a>
+                    </li>
+                {% endfor %}
+            {% else %}
+                <p>Nothing found.</p>
+            {% endif %}
+
+        {% endif %}
+    </div>
+
+    <script>
+        $j('#user_filter').on('change', function (e) {
+            $j('#group_filter').val('');
+            $j('#perm_search').val('');
+        });
+
+        $j('#group_filter').on('change', function (e) {
+            $j('#user_filter').val('');
+            $j('#perm_search').val('');
+        });
+
+        $j('#perm_search').on('keyup', function (e) {
+            $j('#user_filter').val('');
+            $j('#group_filter').val('');
+        });
+
+        function remove_perm(user_id, perm_id, clear) {
+            var url = "{% url 'admin:remove_permission' %}";
+
+            $j.ajax({
+                url: url,
+                type: 'post',
+                data: {
+                    user_id: user_id,
+                    perm_id: perm_id,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                }
+            }).success(function (data) {
+                if (clear === 'perm') {
+                    $j('#' + perm_id).hide();
+                }
+                if (clear === 'user') {
+                    $j('#' + user_id).hide();
+                }
+
+            }).error(function () {
+                alert('Something went wrong, talk to tech.')
+            });
+        }
+    </script>
+    <style>
+        table {
+            min-width: 33%;
+        }
+
+        #note {
+            font-style: italic;
+            color: grey;
+            font-size: 0.7em;
+        }
+    </style>
+{% endblock content %}
