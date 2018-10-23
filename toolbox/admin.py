@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth.models import Group, Permission
 from django.http import HttpResponse, HttpResponseForbidden
@@ -30,7 +30,7 @@ class PermissionAdmin(MonkeyModelAdmin):
 class UserWithPermissionManagerAdmin(MonkeyModelAdmin):
     def get_urls(self):
         urls = super(UserWithPermissionManagerAdmin, self).get_urls()
-        my_urls = patterns(
+        my_urls = [
             url(r'permissonhandler/$',
                 self.admin_site.admin_view(self.permissionhandler),
                 name='permission_handler'
@@ -39,7 +39,7 @@ class UserWithPermissionManagerAdmin(MonkeyModelAdmin):
                 self.admin_site.admin_view(self.remove_permission),
                 name='remove_permission'
                 )
-        )
+        ]
         return my_urls + urls
 
     def permissionhandler(self, request):
