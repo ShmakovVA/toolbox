@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='sportamore_toolbox',
+    name='toolbox',
     packages=find_packages(),
     description='Sportamore Toolbox',
     url='https://github.com/ShmakovVA/toolbox',
