@@ -21,5 +21,3 @@ __all__ = [
     'set_chunker',
     'process_with_threadpool'
 ]
-
-__version__ = tuple(map(int, _vcs.__version__.split('.')[:3]))
