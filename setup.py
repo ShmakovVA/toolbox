@@ -1,9 +1,9 @@
 # coding: utf-8
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name='sportamore_toolbox',
-    packages=find_packages(),
+    packages=['toolbox'],
     description='Sportamore Toolbox',
     url='https://github.com/ShmakovVA/toolbox',
     author='No',
