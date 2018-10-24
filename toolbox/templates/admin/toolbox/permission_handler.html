@@ -13,7 +13,7 @@
     <div class="breadcrumbs">
         <a href="{% url 'admin:index' %}">Home</a> &rsaquo;
         <a href="../../">Core</a> &rsaquo;
-        <a href="{% url 'admin:core_adminuser_changelist' %}">Adminuser</a> &rsaquo;
+        <a href="{% url user_url_changelist %}">{{ user_url_name }}</a> &rsaquo;
         Permission handler
     </div>
 {% endblock %}
@@ -53,18 +53,18 @@
                 <tr>
                     <th>Username</th>
                     <th>Full name</th>
-                    <th>Adminuser</th>
+                    <th>{{ user_url_name }}</th>
                     <th>Employee number</th>
                     <th>Groups</th>
                 </tr>
                 <tr>
-                    <td><a href="{% url 'admin:user_user_change' selected_user.id %}" target="_blank">{{ selected_user.username }}</a></td>
+                    <td><a href="{% url base_user_url_change selected_user.id %}" target="_blank">{{ selected_user.username }}</a></td>
                     <td>{{ selected_user.get_full_name }}</td>
                     <td>
-                        <a href="{% url 'admin:core_adminuser_change' selected_user.adminuser.id %}">adminuser</a>
+                        <a href="{% url user_url_change user_selected.id %}">{{ user_url_name }}</a>
                     </td>
                     <td>
-                       {{ selected_user.adminuser.employee_no }}
+                       {{ user_selected.employee_no }}
                     </td>
                     <td>
                         {% for group in selected_user_groups %}
@@ -79,12 +79,12 @@
 
             <h2>Permissions (applied to user)</h2>
                 {% if user_perms %}
-                    <p>Permissions with the <img src="/static/admin/img/icon-no.svg"> icon next to them, are already applied via groups, and can safely be removed. (click the icon)</p>
+                    <p>Permissions with the <img src="{{ no_icon }}"> icon next to them, are already applied via groups, and can safely be removed. (click the icon)</p>
                     <ul>
                         {%  for perm in user_perms %}
                             {% if perm.1 %}
                                 <li id="{{ perm.0.pk }}">
-                                    <a href="{% url 'admin:permission_handler' %}?permission={{ perm.0.pk }}">{{ perm.0 }}</a> {% if perm.1 %}<a href="#" onclick="remove_perm('{{ selected_user.pk }}','{{ perm.0.pk }}', 'perm');"><img src="/static/admin/img/icon-no.svg"></a>{% endif %}
+                                    <a href="{% url 'admin:permission_handler' %}?permission={{ perm.0.pk }}">{{ perm.0 }}</a> {% if perm.1 %}<a href="#" onclick="remove_perm('{{ selected_user.pk }}','{{ perm.0.pk }}', 'perm');"><img src="{{ no_icon }}"></a>{% endif %}
                                 </li>
                             {% else %}
                                 <li id="{{ perm.0.pk }}"><a href="{% url 'admin:permission_handler' %}?permission={{ perm.0.pk }}">{{ perm.0 }}</a></li>
@@ -137,7 +137,7 @@
         <h3>
             {{ selected_perm }}
         </h3>
-        <p>Users with the <img src="/static/admin/img/icon-no.svg"> icon next to them, have the permission already applied via groups, and can safely be removed. (click the icon)</p>
+        <p>Users with the <img src="{{ no_icon }}"> icon next to them, have the permission already applied via groups, and can safely be removed. (click the icon)</p>
 
         <table class="module">
             <thead>
@@ -152,7 +152,7 @@
                     <td>
                         {%  for user in perm_users %}
                             {% if user.1 %}
-                                <span id="{{ user.0.pk }}"><a href="{% url 'admin:permission_handler' %}?user={{ user.0.pk }}">{{ user.0 }}</a> {% if user.1 %}<a href="#" onclick="remove_perm('{{ user.0.pk }}','{{ selected_perm.pk }}', 'user');"><img src="/static/admin/img/icon-no.svg"></a></span>{% endif %}
+                                <span id="{{ user.0.pk }}"><a href="{% url 'admin:permission_handler' %}?user={{ user.0.pk }}">{{ user.0 }}</a> {% if user.1 %}<a href="#" onclick="remove_perm('{{ user.0.pk }}','{{ selected_perm.pk }}', 'user');"><img src="{{ no_icon }}"></a></span>{% endif %}
                             {% else %}
                                 <a href="{% url 'admin:permission_handler' %}?user={{ user.0.pk }}" id="{{ user.0.pk }}">{{ user.0 }}</a>
                             {% endif %}

@@ -12,6 +12,12 @@ setup(
         'furl >= 0.5.6',
     ],
     include_package_data=True,
+    package_data={
+        'toolbox': ['templates/admin/toolbox/*.html'],
+    },
+    exclude_package_data={
+        '': ['tests/*.py'],
+    },
     extras_require={
         ':python_version == "2.7"': ['futures']
     },
